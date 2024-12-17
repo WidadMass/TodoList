@@ -1,15 +1,19 @@
 import express from 'express';
-import userRoutes from './modules/users/userRoutes';
+import pool from './config/db';
 
 const app = express();
+const PORT = process.env.PORT || 3000;
 
-// Middleware pour JSON
-app.use(express.json());
+app.get('/test-db', async (req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT 1 + 1 AS solution');
+    res.send(`Connexion réussie ! Résultat : ${JSON.stringify(rows)}`);
+  } catch (error) {
+    console.error('Erreur de connexion MySQL :', error);
+    res.status(500).send('Erreur de connexion à MySQL');
+  }
+});
 
-// Middleware pour x-www-form-urlencoded
-app.use(express.urlencoded({ extended: true }));
-
-// Routes
-app.use('/api/users', userRoutes);
-
-export default app;
+app.listen(PORT, () => {
+  console.log(`🚀 Serveur en cours d'exécution sur http://localhost:${PORT}`);
+});
