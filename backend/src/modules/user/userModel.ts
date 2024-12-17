@@ -1,8 +1,15 @@
 export interface User {
-    id?: number;              // ID généré automatiquement (AUTO_INCREMENT)
-    name: string;             // Nom de l'utilisateur
-    email: string;            // Email (unique)
-    password: string;         // Mot de passe haché
-    created_at?: Date;        // Date de création de l'utilisateur
+    id_user?: number;
+    First_name: string;
+    Last_name: string;
+    email: string;
+    salt?: string;
+    password: string;
+    login_identifier?: string;
+    role?: string;
+    created_at?: Date;
+    updated_at?: Date;
   }
+  
+  export type UserCreation = Pick<User, 'First_name' | 'email' | 'password'>;
   
