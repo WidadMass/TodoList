@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import pool from './config/db'; // Import de la connexion MySQL
 import userRoutes from './modules/user/userRoutes'; // Routes des utilisateurs
+import statutRoutes from './statut/statutRoutes'; // Routes des statuts
 
 dotenv.config(); // Chargement des variables d'environnement
 
@@ -27,6 +28,9 @@ app.get('/test-db', async (req, res) => {
 
 // Routes des utilisateurs
 app.use('/api/users', userRoutes);
+
+// Routes des statuts
+app.use('/api/statuts', statutRoutes);
 
 // Démarrage du serveur
 app.listen(PORT, () => {
