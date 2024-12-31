@@ -11,6 +11,7 @@ app.use(express.json());
 // Route pour tester la connexion à la base de données
 app.get('/test-db', async (req, res) => {
   try {
+    // Vérification de la connexion en effectuant une requête simple
     const [rows] = await pool.query('SELECT 1 + 1 AS solution');
     res.send(`Connexion réussie ! Résultat : ${JSON.stringify(rows)}`);
   } catch (error) {

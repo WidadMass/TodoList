@@ -1,6 +1,9 @@
 import pool from '../config/db';
 import { Statut, StatutCreation } from './statutModel';
 
+// Importation du type OkPacket depuis mysql2
+import { OkPacket } from 'mysql2';
+
 // Définir un type pour la réponse de création de statut
 interface StatutResponse {
   id_statut: number;
@@ -12,21 +15,25 @@ interface StatutResponse {
 export const createStatut = async (statusData: StatutCreation): Promise<StatutResponse> => {
   const { status_label, description } = statusData;
   try {
-    // Exécuter la requête d'insertion
     const [result] = await pool.query(
       'INSERT INTO Statuts (status_label, description, created_at) VALUES (?, ?, ?)', 
       [status_label, description, new Date()]
     );
-
-    // Le résultat de l'insertion peut être un objet contenant insertId si la requête réussit
+    
+    // Vérification que result est un OkPacket et contient insertId
     if ('insertId' in result) {
-      const insertId = result.insertId;
+      const insertId = result.insertId; // Si insertId existe, on l'utilise
       return { id_statut: insertId, status_label, description };
+    } else {
+      throw new Error('insertId non trouvé dans la réponse de la requête');
     }
 
-    throw new Error('insertId n\'existe pas dans le résultat');
-  } catch (error) {
-    throw new Error(`Erreur lors de la création du statut: ${error.message}`);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      throw new Error(`Erreur lors de la création du statut: ${error.message}`);
+    } else {
+      throw new Error('Erreur inconnue lors de la création du statut');
+    }
   }
 };
 
@@ -34,9 +41,13 @@ export const createStatut = async (statusData: StatutCreation): Promise<StatutRe
 export const getAllStatuts = async () => {
   try {
     const [rows] = await pool.query('SELECT * FROM Statuts');
-    return rows;
-  } catch (error) {
-    throw new Error(`Erreur lors de la récupération des statuts: ${error.message}`);
+    return rows; // rows est déjà un tableau d'objets
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      throw new Error(`Erreur lors de la récupération des statuts: ${error.message}`);
+    } else {
+      throw new Error('Erreur inconnue lors de la récupération des statuts');
+    }
   }
 };
 
@@ -44,12 +55,16 @@ export const getAllStatuts = async () => {
 export const getStatutById = async (id: number) => {
   try {
     const [rows] = await pool.query('SELECT * FROM Statuts WHERE id_statut = ?', [id]);
-    if (rows.length > 0) {
-      return rows[0];
+    if (Array.isArray(rows) && rows.length > 0) {
+      return rows[0]; // Si 'rows' est un tableau et contient des données
     }
     return null;  // Statut non trouvé
-  } catch (error) {
-    throw new Error(`Erreur lors de la récupération du statut: ${error.message}`);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      throw new Error(`Erreur lors de la récupération du statut: ${error.message}`);
+    } else {
+      throw new Error('Erreur inconnue lors de la récupération du statut');
+    }
   }
 };
 
@@ -61,9 +76,16 @@ export const updateStatut = async (id: number, statusData: StatutCreation) => {
       'UPDATE Statuts SET status_label = ?, description = ?, updated_at = ? WHERE id_statut = ?', 
       [status_label, description, new Date(), id]
     );
-    return result.affectedRows > 0;
-  } catch (error) {
-    throw new Error(`Erreur lors de la mise à jour du statut: ${error.message}`);
+    
+    // Assertion de type pour OkPacket
+    const affectedRows = (result as OkPacket).affectedRows;
+    return affectedRows > 0;
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      throw new Error(`Erreur lors de la mise à jour du statut: ${error.message}`);
+    } else {
+      throw new Error('Erreur inconnue lors de la mise à jour du statut');
+    }
   }
 };
 
@@ -71,8 +93,15 @@ export const updateStatut = async (id: number, statusData: StatutCreation) => {
 export const deleteStatut = async (id: number) => {
   try {
     const [result] = await pool.query('DELETE FROM Statuts WHERE id_statut = ?', [id]);
-    return result.affectedRows > 0;
-  } catch (error) {
-    throw new Error(`Erreur lors de la suppression du statut: ${error.message}`);
+
+    // Assertion de type pour OkPacket
+    const affectedRows = (result as OkPacket).affectedRows;
+    return affectedRows > 0;
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      throw new Error(`Erreur lors de la suppression du statut: ${error.message}`);
+    } else {
+      throw new Error('Erreur inconnue lors de la suppression du statut');
+    }
   }
 };

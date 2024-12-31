@@ -7,10 +7,10 @@ import statutRoutes from './statut/statutRoutes'; // Routes des statuts
 dotenv.config(); // Chargement des variables d'environnement
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000; // Utilisation du port depuis les variables d'environnement ou 3000 par défaut
 
 // Middleware pour parser les requêtes JSON
-app.use(express.json());
+app.use(express.json()); 
 
 // Middleware pour parser les requêtes x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }));
@@ -18,6 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 // Route de test pour vérifier la connexion à MySQL
 app.get('/test-db', async (req, res) => {
   try {
+    // Effectue une requête simple pour tester la connexion à la base de données
     const [rows] = await pool.query('SELECT 1 + 1 AS solution');
     res.send(`Connexion MySQL réussie ! Résultat : ${JSON.stringify(rows)}`);
   } catch (error) {
