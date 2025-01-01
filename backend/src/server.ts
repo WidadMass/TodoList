@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import pool from './config/db'; // Import de la connexion MySQL
 import userRoutes from './modules/user/userRoutes'; // Routes des utilisateurs
 import statutRoutes from './statut/statutRoutes'; // Routes des statuts
+import prioriteRoutes from './priorites/prioriteRoutes'; // Routes des priorités
 
 dotenv.config(); // Chargement des variables d'environnement
 
@@ -10,7 +11,7 @@ const app = express();
 const PORT = process.env.PORT || 3000; // Utilisation du port depuis les variables d'environnement ou 3000 par défaut
 
 // Middleware pour parser les requêtes JSON
-app.use(express.json()); 
+app.use(express.json());
 
 // Middleware pour parser les requêtes x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }));
@@ -32,6 +33,9 @@ app.use('/api/users', userRoutes);
 
 // Routes des statuts
 app.use('/api/statuts', statutRoutes);
+
+// Routes des priorités
+app.use('/api/priorites', prioriteRoutes);
 
 // Démarrage du serveur
 app.listen(PORT, () => {
