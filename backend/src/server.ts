@@ -2,7 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import pool from './config/db'; // Import de la connexion MySQL
 import userRoutes from './modules/user/userRoutes'; // Routes des utilisateurs
-import statutRoutes from './modules/statuts/statutRoutes'; //Routes des statuts
+import statutRoutes from './modules/statut/statutRoutes'; //Routes des statuts
 import todoRoutes from './modules/todos/todoRoutes'; //Routes des todos
 import prioriteRoutes from './modules/priorites/prioriteRoutes'; //Routes des priorités
 import { setupGlobalMiddleware } from './middleware/global.middleware';
@@ -22,7 +22,7 @@ app.use('/api/users/register', userRoutes);
 app.use('/api/users/login', userRoutes);
 
 // Middleware d'authentification pour toutes les autres routes /api/
-app.use('/api', authMiddleware);
+// app.use('/api', authMiddleware);
 
 // Route de test pour vérifier la connexion à MySQL
 app.get('/test-db', async (req, res, next) => {

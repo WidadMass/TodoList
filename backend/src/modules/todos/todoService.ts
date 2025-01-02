@@ -10,10 +10,10 @@ export const getAllTodos = async (): Promise<TodoWithRelations[]> => {
         u.First_name as user_name,
         p.priority_label,
         s.statuts_label as statut_label
-      FROM ToDo t
-      LEFT JOIN Users u ON t.id_user_1 = u.id_user
-      LEFT JOIN Priorities p ON t.id_priority_1 = p.id_priority
-      LEFT JOIN Statuts s ON t.id_statut = s.id_statut
+      FROM todo t
+      LEFT JOIN Users u ON t.id_user = u.id
+      LEFT JOIN Priorities p ON t.id_priority = p.id
+      LEFT JOIN Statuts s ON t.id_statut = s.id
       ORDER BY t.creation_date DESC
     `;
     const [rows] = await pool.execute(query);
@@ -32,11 +32,11 @@ export const getTodoById = async (id: number): Promise<TodoWithRelations | null>
         u.First_name as user_name,
         p.priority_label,
         s.statuts_label as statut_label
-      FROM ToDo t
-      LEFT JOIN Users u ON t.id_user_1 = u.id_user
-      LEFT JOIN Priorities p ON t.id_priority_1 = p.id_priority
-      LEFT JOIN Statuts s ON t.id_statut = s.id_statut
-      WHERE t.id_todo = ?
+      FROM todo t
+      LEFT JOIN Users u ON t.id_user = u.id
+      LEFT JOIN Priorities p ON t.id_priority = p.id
+      LEFT JOIN Statuts s ON t.id_statut = s.id
+      WHERE t.id = ?
     `;
     const [rows] = await pool.execute(query, [id]);
     const todos = rows as TodoWithRelations[];
@@ -49,23 +49,21 @@ export const getTodoById = async (id: number): Promise<TodoWithRelations | null>
 // Créer une tâche
 export const createTodo = async (todoData: TodoCreation): Promise<number> => {
   try {
+console.log(todoData)
+
     const query = `
-      INSERT INTO ToDo (
+      INSERT INTO todo (
         title, description, creation_date, modification_date, due_date,
-        modification_reason, id_user, id_priority, id_status,
-        id_priority_1, id_user_1, id_statut
-      ) VALUES (?, ?, NOW(), NOW(), ?, ?, ?, ?, ?, ?, ?, ?)
+        modification_reason, id_user, id_priority, id_statut
+      ) VALUES (?, ?, NOW(), NOW(), ?, ?, ?, ?, ?)
     `;
     const values = [
       todoData.title,
       todoData.description,
       todoData.due_date,
-      todoData.modification_reason,
+      todoData.modification_reason ?? null,
       todoData.id_user,
       todoData.id_priority,
-      todoData.id_status,
-      todoData.id_priority_1,
-      todoData.id_user_1,
       todoData.id_statut
     ];
     
@@ -81,7 +79,7 @@ export const createTodo = async (todoData: TodoCreation): Promise<number> => {
 export const updateTodo = async (id: number, todoData: TodoUpdate): Promise<boolean> => {
   try {
     const query = `
-      UPDATE ToDo 
+      UPDATE todo 
       SET 
         title = ?,
         description = ?,
@@ -89,21 +87,15 @@ export const updateTodo = async (id: number, todoData: TodoUpdate): Promise<bool
         due_date = ?,
         modification_reason = ?,
         id_priority = ?,
-        id_status = ?,
-        id_priority_1 = ?,
-        id_user_1 = ?,
         id_statut = ?
-      WHERE id_todo = ?
+      WHERE id = ?
     `;
     const values = [
       todoData.title,
       todoData.description,
       todoData.due_date,
-      todoData.modification_reason,
+      todoData.modification_reason ?? null,
       todoData.id_priority,
-      todoData.id_status,
-      todoData.id_priority_1,
-      todoData.id_user_1,
       todoData.id_statut,
       id
     ];
@@ -118,7 +110,7 @@ export const updateTodo = async (id: number, todoData: TodoUpdate): Promise<bool
 // Supprimer une tâche
 export const deleteTodo = async (id: number): Promise<boolean> => {
   try {
-    const query = 'DELETE FROM ToDo WHERE id_todo = ?';
+    const query = 'DELETE FROM todo WHERE id = ?';
     const [result] = await pool.execute(query, [id]);
     return (result as any).affectedRows > 0;
   } catch (error) {
@@ -135,11 +127,11 @@ export const getTodosByUserId = async (userId: number): Promise<TodoWithRelation
         u.First_name as user_name,
         p.priority_label,
         s.statuts_label as statut_label
-      FROM ToDo t
-      LEFT JOIN Users u ON t.id_user_1 = u.id_user
-      LEFT JOIN Priorities p ON t.id_priority_1 = p.id_priority
-      LEFT JOIN Statuts s ON t.id_statut = s.id_statut
-      WHERE t.id_user_1 = ?
+      FROM todo t
+      LEFT JOIN Users u ON t.id_user = u.id
+      LEFT JOIN Priorities p ON t.id_priority = p.id
+      LEFT JOIN Statuts s ON t.id_statut = s.id
+      WHERE t.id_user = ?
       ORDER BY t.creation_date DESC
     `;
     const [rows] = await pool.execute(query, [userId]);

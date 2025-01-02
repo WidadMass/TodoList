@@ -8,9 +8,6 @@ export interface Todo {
     modification_reason?: string;
     id_user: number;
     id_priority: number;
-    id_status: number;
-    id_priority_1: number;
-    id_user_1: number;
     id_statut: number;
 }
 

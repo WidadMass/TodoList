@@ -1,4 +1,4 @@
-import pool from '../config/db';
+import pool from '../../config/db';
 import { Statut, StatutCreation } from './statutModel';
 
 // Importation du type OkPacket depuis mysql2
@@ -6,24 +6,24 @@ import { OkPacket } from 'mysql2';
 
 // Définir un type pour la réponse de création de statut
 interface StatutResponse {
-  id_statut: number;
-  status_label: string;
+  id: number;
+  statuts_label: string;
   description: string;
 }
 
 // Créer un nouveau statut
-export const createStatut = async (statusData: StatutCreation): Promise<StatutResponse> => {
-  const { status_label, description } = statusData;
+export const createStatut = async (statutsData: StatutCreation): Promise<StatutResponse> => {
+  const { statuts_label, description } = statutsData;
   try {
     const [result] = await pool.query(
-      'INSERT INTO Statuts (status_label, description, created_at) VALUES (?, ?, ?)', 
-      [status_label, description, new Date()]
+      'INSERT INTO statuts (statuts_label, description, created_at) VALUES (?, ?, ?)', 
+      [statuts_label, description, new Date()]
     );
     
     // Vérification que result est un OkPacket et contient insertId
     if ('insertId' in result) {
       const insertId = result.insertId; // Si insertId existe, on l'utilise
-      return { id_statut: insertId, status_label, description };
+      return { id: insertId, statuts_label, description };
     } else {
       throw new Error('insertId non trouvé dans la réponse de la requête');
     }
@@ -40,7 +40,7 @@ export const createStatut = async (statusData: StatutCreation): Promise<StatutRe
 // Récupérer tous les statuts
 export const getAllStatuts = async () => {
   try {
-    const [rows] = await pool.query('SELECT * FROM Statuts');
+    const [rows] = await pool.query('SELECT * FROM statuts');
     return rows; // rows est déjà un tableau d'objets
   } catch (error: unknown) {
     if (error instanceof Error) {
@@ -54,7 +54,7 @@ export const getAllStatuts = async () => {
 // Récupérer un statut par son ID
 export const getStatutById = async (id: number) => {
   try {
-    const [rows] = await pool.query('SELECT * FROM Statuts WHERE id_statut = ?', [id]);
+    const [rows] = await pool.query('SELECT * FROM statuts WHERE id = ?', [id]);
     if (Array.isArray(rows) && rows.length > 0) {
       return rows[0]; // Si 'rows' est un tableau et contient des données
     }
@@ -70,11 +70,11 @@ export const getStatutById = async (id: number) => {
 
 // Mettre à jour un statut
 export const updateStatut = async (id: number, statusData: StatutCreation) => {
-  const { status_label, description } = statusData;
+  const { statuts_label, description } = statusData;
   try {
     const [result] = await pool.query(
-      'UPDATE Statuts SET status_label = ?, description = ?, updated_at = ? WHERE id_statut = ?', 
-      [status_label, description, new Date(), id]
+      'UPDATE statuts SET statuts_label = ?, description = ?, updated_at = ? WHERE id = ?', 
+      [statuts_label, description, new Date(), id]
     );
     
     // Assertion de type pour OkPacket
@@ -92,7 +92,7 @@ export const updateStatut = async (id: number, statusData: StatutCreation) => {
 // Supprimer un statut
 export const deleteStatut = async (id: number) => {
   try {
-    const [result] = await pool.query('DELETE FROM Statuts WHERE id_statut = ?', [id]);
+    const [result] = await pool.query('DELETE FROM statuts WHERE id = ?', [id]);
 
     // Assertion de type pour OkPacket
     const affectedRows = (result as OkPacket).affectedRows;

@@ -1,18 +1,21 @@
-import { Router } from 'express';
+import express from 'express';
 import {
   createPrioriteHandler,
-  getAllPrioritesHandler,
-  getPrioriteByIdHandler,
+  getPriorites,
+  getPriorite,
   updatePrioriteHandler,
-  deletePrioriteHandler
+  deletePrioriteHandler,
 } from './prioriteController';
 
-const router = Router();
+const router = express.Router();
 
-router.post('/', createPrioriteHandler);         // Créer une priorité
-router.get('/', getAllPrioritesHandler);         // Récupérer toutes les priorités
-router.get('/:id', getPrioriteByIdHandler);      // Récupérer une priorité par ID
-router.put('/:id', updatePrioriteHandler);       // Mettre à jour une priorité
-router.delete('/:id', deletePrioriteHandler);    // Supprimer une priorité
+// Définir la route POST pour créer une priorité
+router.post('/', createPrioriteHandler);
+
+// Autres routes (GET, PUT, DELETE)
+router.get('/', getPriorites);
+router.get('/:id', getPriorite);
+router.put('/:id', updatePrioriteHandler);
+router.delete('/:id', deletePrioriteHandler);
 
 export default router;

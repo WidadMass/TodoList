@@ -4,10 +4,10 @@ import { StatutCreation } from './statutModel';
 
 // Créer un statut
 export const createStatut = async (req: Request, res: Response) => {
-  const { status_label, description }: StatutCreation = req.body;
+  const { statuts_label, description }: StatutCreation = req.body;
   
   try {
-    const statut = await statutService.createStatut({ status_label, description });
+    const statut = await statutService.createStatut({ statuts_label, description });
     res.status(201).json(statut);
   } catch (error: unknown) {  // Déclarer le type de error comme unknown
     if (error instanceof Error) {  // Vérifier si l'erreur est une instance d'Error
@@ -55,10 +55,10 @@ export const fetchStatutById = async (req: Request, res: Response) => {
 // Mettre à jour un statut par ID
 export const updateStatutById = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { status_label, description }: StatutCreation = req.body;
+  const { statuts_label, description }: StatutCreation = req.body;
   
   try {
-    const updated = await statutService.updateStatut(Number(id), { status_label, description });
+    const updated = await statutService.updateStatut(Number(id), { statuts_label, description });
     if (updated) {
       res.json({ message: 'Statut mis à jour avec succès' });
     } else {
