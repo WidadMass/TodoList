@@ -27,6 +27,7 @@ app.use('/api', authMiddleware);
 // Route de test pour vérifier la connexion à MySQL
 app.get('/test-db', async (req, res, next) => {
   try {
+    // Effectue une requête simple pour tester la connexion à la base de données
     const [rows] = await pool.query('SELECT 1 + 1 AS solution');
     res.json({
       success: true,
@@ -52,6 +53,12 @@ process.on('unhandledRejection', (err: Error) => {
 
 // Gestion des erreurs
 app.use(errorHandler);
+
+// Routes des statuts
+app.use('/api/statuts', statutRoutes);
+
+// Routes des priorités
+app.use('/api/priorites', prioriteRoutes);
 
 // Démarrage du serveur
 app.listen(PORT, () => {
